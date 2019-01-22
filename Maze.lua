@@ -10,16 +10,18 @@ function FindNeighbors(i)
 end
 
 --looking for a way
-function FindTheWay(StartPoint)
-    QueueForCheck = {}
+	QueueForCheck = {}
     NodesWithCost = {}
+function FindTheWay(StartPoint)
+    --QueueForCheck = {}
+    --NodesWithCost = {}
 
 	NodesWithCost[StartPoint] = 0
     --table.insert(NodesWithCost, start, 0)
-    CurNodeNumber = start
+    CurNodeNumber = StartPoint
     k = 0 -- step in queue
 
-    while NodesWithCost[ExitPoint] ~=nil do --while we not mark the finish
+    while NodesWithCost[ExitPoint] ==nil do --while we not mark the finish
 
         for i = 1, #Node[CurNodeNumber] do --дл€ каждого соседа
             if Node[CurNodeNumber][i] == ExitPoint then
@@ -52,16 +54,19 @@ function RecoveryTheWay(ExitPoint)
     -- ѕќ ј текуща€ €чейка Ч не стартова€
     -- ¬ќ«¬–ј“ путь найден
     Way = {}
+	NeighborsNode = {}
     CurNode = ExitPoint
     curCost = NodesWithCost[CurNode]
     while CurNode ~= StartPoint do
+		for i = 1, #Node[CurNode] do
+			NeighborsNode[i] = Node[CurNode][i] -- добавл€ем на проверку список соседей текущей ноды
+		end
 
-        NeighborsNode = Node[CurNode] -- добавл€ем на проверку список соседей текущей ноды
-        for i=1, #NeighborsNode do
+	   for i=1, #NeighborsNode do
             if NodesWithCost[NeighborsNode[i]] == StartPoint then break
             elseif NodesWithCost[NeighborsNode[i]] == curCost-1 then
                 table.insert(Way, NeighborsNode[i])
-                curNode = Neighbors[i]
+                curNode = NeighborsNode[i]
                 curCost = curCost -1
             end
         end
@@ -79,6 +84,16 @@ FileRead = io.open(FileAdress, "r")
 local ReadData
 ReadData = FileRead:read("*l")
 
+if ReadData == nil then
+	local FileWriteAdress = "D:\\LUA\\tests\\labirint\\result.txt"
+	local FileWrite
+
+	FileWrite = io.open(FileWriteAdress, "w")
+	FileWrite:write("Error with open file")
+	FileWrite:close()
+else
+
+
 --лабиринт по-умолчанию окружен стеной
 --создаем стену сверху, после - читаем лабиринт из файла
 n = #ReadData+2 --размер строки = длина строки в файле + два дополнительных столбца "стен" справа и слева
@@ -91,7 +106,7 @@ while ReadData~=nil do
     table.insert(BaseMaze, 0) --первый элемент каждой строки - стена
 
     for str in string.gmatch(ReadData, ".") do
-        if str == "0" then
+        if str == "0" or str == 0 then
             table.insert(BaseMaze, 0)
         elseif str == "I" then
             table.insert(BaseMaze, 2)
@@ -114,12 +129,14 @@ for i =1, n do
     table.insert(BaseMaze, 0)
 end
 
+
 Node = {} --наши узлы = свободные дл€ прохода €чейки лабиринта
 
 for i=1, #BaseMaze do
     if BaseMaze[i] == 1 or BaseMaze[i] == 2 or BaseMaze[i] == 3 then
-        tmp_node = {i = FindNeighbors(i)}
-        table.insert(Node, tmp_node)
+		tmp_node = FindNeighbors(i)
+		Node[i] = tmp_node
+        --table.insert(Node, tmp_node)
         tmp_node = nil
     end
 end
@@ -129,9 +146,41 @@ local FileWriteAdress = "D:\\LUA\\tests\\labirint\\result.txt"
 local FileWrite
 FileWrite = io.open(FileWriteAdress, "w")
 
+FindTheWay(StartPoint)
+if NodesWithCost[ExitPoint]~= nil then
+NewWay = RecoveryTheWay(ExitPoint)
+    if NewWay ~= nil then
+        for numb in NewWay do
+            BaseMaze[numb] = "-"
+        end
+    end
+    for i=1, #BaseMaze, n do
+        for j = i, i+n-1 do
+            if BaseMaze[j] == 0 then
+                FileWrite:write(0)
+            elseif BaseMaze[j] == 1 then
+                FileWrite:write(" ")
+            elseif BaseMaze[j] == 2 then
+                FileWrite:write("I")
+            elseif BaseMaze[j] == 3 then
+                FileWrite:write("E")
+            elseif BaseMaze[j] == "-" then
+                FileWrite:write("-")
+            end
+        end
+        FileWrite:write("\n")
+    end
+    FileWrite:close()
+else
+	FileWrite:write("There isn't any way from start to finish.Sorry :-(")
+    FileWrite:close()
+
+end
+end
 
 
-if FindTheWay(StartPoint) == true or NodesWithCost[ExitPoint] ~= nil then
+
+--[[if FindTheWay(StartPoint) == true or NodesWithCost[ExitPoint] ~= nil then
 -- если нашелс€ путь или помечена финишна€ €чейка
     NewWay = RecoveryTheWay(ExitPoint)
     if NewWay ~= nil then
@@ -160,4 +209,4 @@ else
 
     FileWrite:write("There isn't any way from start to finish.Sorry :-(")
     FileWrite:close()
-end
+end]]
