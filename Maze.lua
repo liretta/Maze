@@ -1,142 +1,127 @@
-п»ї
+--looking for neighbors
 function FindNeighbors(i)
-	neighbors = {}
-	if BaseMaze[i-1] == 1 or BaseMaze[i-1] == 3 or BaseMaze[i-1] == 2 then table.insert(neighbors, i-1) end --СЃРѕСЃРµРґ СЃР»РµРІР°
-	if BaseMaze[i+1] == 1 or BaseMaze[i+1] == 3 or BaseMaze[i+1] == 2 then table.insert(neighbors, i+1) end --СЃРѕСЃРµРґ СЃРїСЂР°РІР°
-	if BaseMaze[i-n] == 1 or BaseMaze[i-n] == 3 or BaseMaze[i-n] == 2 then table.insert(neighbors, i-n) end --СЃРѕСЃРµРґ СЃРІРµСЂС…Сѓ
-	if BaseMaze[i+n] == 1 or BaseMaze[i+n] == 3 or BaseMaze[i+n] == 2 then table.insert(neighbors, i+n) end	--СЃРѕСЃРµРґ СЃРЅРёР·Сѓ
+    neighbors = {}
+    if BaseMaze[i-1] == 1 or BaseMaze[i-1] == 3 or BaseMaze[i-1] == 2 then table.insert(neighbors, i-1) end --сосед слева
+    if BaseMaze[i+1] == 1 or BaseMaze[i+1] == 3 or BaseMaze[i+1] == 2 then table.insert(neighbors, i+1) end --сосед справа
+    if BaseMaze[i-n] == 1 or BaseMaze[i-n] == 3 or BaseMaze[i-n] == 2 then table.insert(neighbors, i-n) end --сосед сверху
+    if BaseMaze[i+n] == 1 or BaseMaze[i+n] == 3 or BaseMaze[i+n] == 2 then table.insert(neighbors, i+n) end --сосед снизу
 
-	return neighbors
+    return neighbors
 end
 
---С„СѓРЅРєС†РёСЏ РїРѕРёСЃРєР° РїСѓС‚Рё. Р’РµСЂРЅРµС‚ true, РµСЃР»Рё С„РёРЅР°Р»СЊРЅР°СЏ С‚РѕС‡РЅР° РґРѕСЃС‚РёРіРЅСѓС‚Р°
---РІРµСЂРЅРµС‚ false, РµСЃР»Рё РґРѕСЃС‚РёРіРЅСѓС‚СЊ С„РёРЅР°Р»СЊРЅРѕР№ С‚РѕС‡РєРё РЅРµ СѓРґР°Р»РѕСЃСЊ - РІС‹С…РѕРґР° РґР»СЏ РЅР°СЃ РЅРµС‚
+--looking for a way
 function FindTheWay(StartPoint)
---РґР»СЏ РєР°Р¶РґРѕРіРѕ СЃРѕСЃРµРґР° СЃ С‡РёСЃР»РѕРј "d"
---РµСЃР»Рё СЃРѕСЃРµРґ РЅРµ РІ СЃРїРёСЃРєРµ РїСЂРѕРІРµСЂРµРЅРЅС‹С… Рё РІ СЃРїРёСЃРєРµ С†РµРЅС‹ РµРіРѕ С‚РѕР¶Рµ РЅРµС‚
---РґРѕР±Р°РІР»СЏРµРј РµРіРѕ РІ РѕС‡РµСЂРµРґСЊ РЅР° РїСЂРѕРІРµСЂРєСѓ
+    QueueForCheck = {}
+    NodesWithCost = {}
 
---РЅСѓР¶РЅР° РѕС‡РµСЂРµРґСЊ РґР»СЏ РїСЂРѕРІРµСЂРєРё
---РѕС‡РµСЂРµРґСЊ СЃРѕ СЃС‚РѕРёРјРѕСЃС‚СЊСЋ
---РѕС‡РµСЂРµРґСЊ РїСЂРѕРІРµСЂРµРЅРЅС‹С…
+	NodesWithCost[StartPoint] = 0
+    --table.insert(NodesWithCost, start, 0)
+    CurNodeNumber = start
+    k = 0 -- step in queue
 
-	QueueForCheck = {}
-	NodesWithCost = {}
-	--ChecikgNodes = {}
+    while NodesWithCost[ExitPoint] ~=nil do --while we not mark the finish
 
---РїРѕРјРµС‡Р°РµРј СЃС‚Р°СЂС‚РѕРІСѓСЋ СЏС‡РµР№РєСѓ РЅСѓР»РµРј
-	table.insert(NodesWithCost, start = 0)
-	CurNodeNumber = start
-	--d = 0 -- С‚РµРєСѓС‰Р°СЏ СЃС‚РѕРёРјРѕСЃС‚СЊ
-	k = 0 -- С€Р°Рі РІ РѕС‡РµСЂРµРґРё
+        for i = 1, #Node[CurNodeNumber] do --для каждого соседа
+            if Node[CurNodeNumber][i] == ExitPoint then
+                --table.insert(NodesWithCost, Node[CurNodeNumber][i], NodesWithCost[CurNodeNumber]+1)
+                NodesWithCost[Node[CurNodeNumber][i]] = NodesWithCost[CurNodeNumber]+1
+                return true
+            else
+                if NodesWithCost[Node[CurNodeNumber][i]] == nil then --проверяем, что i-й по счету сосед еще не помечен
+                    --table.insert(NodesWithCost, Node[CurNodeNumber][i] = NodesWithCost[CurNodeNumber]+1)
+                    NodesWithCost[Node[CurNodeNumber][i]] = NodesWithCost[CurNodeNumber]+1
+                    table.insert(QueueForCheck, Node[CurNodeNumber][i]) -- добавляем этого соседа в список на проверку соседей
+                end
+            end
+        end
 
-while --[[QueueForCheck~= nil and ]] NodesWithCost[ExitPoint] ~=nil do --РїРѕРєР° РµС‰Рµ РµСЃС‚СЊ С‡С‚Рѕ РїСЂРѕРІРµСЂСЏС‚СЊ Рё РїРѕРєР° С„РёРЅРёС€ РЅРµ РїРѕРјРµС‡РµРЅ
+        --переходим к следующему объекту в очереди проверок
+        k = k +1
+        --устанавливаем следующего проверяемого
+        CurNodeNumber = QueueForCheck[k]
+    end
 
-	--for node in NodesWithCost do
-	--if node == d --РµСЃР»Рё С‚РµРєСѓС‰Р°СЏ РЅРѕРґР° РІ СЃРїРёСЃРєРµ СЃС‚РѕРёРјРѕСЃС‚Рё == С‚РµРєСѓС‰РµР№ СЃС‚РѕРёРјРѕСЃС‚Рё
+    return false
 
-	for i = 1, #Node[CurNodeNumber] do --РґР»СЏ РєР°Р¶РґРѕРіРѕ СЃРѕСЃРµРґР°
-		if Node[CurNodeNumber][i] == ExitPoint
-			table.insert(NodesWithCost, Node[CurNodeNumber][i] = NodesWithCost[CurNodeNumber]+1)
-			return true
-		else
-			if NodesWithCost[Node[CurNodeNumber][i]] == nil then --РїСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ i-Р№ РїРѕ СЃС‡РµС‚Сѓ СЃРѕСЃРµРґ РµС‰Рµ РЅРµ РїРѕРјРµС‡РµРЅ
-				table.insert(NodesWithCost, Node[CurNodeNumber][i] = NodesWithCost[CurNodeNumber]+1)
-				--РїРѕРјРµС‡Р°РµРј СЃРѕСЃРµРґР° РєР°Рє d+1
-				table.insert(QueueForCheck, Node[CurNodeNumber][i]) -- РґРѕР±Р°РІР»СЏРµРј СЌС‚РѕРіРѕ СЃРѕСЃРµРґР° РІ СЃРїРёСЃРѕРє РЅР° РїСЂРѕРІРµСЂРєСѓ СЃРѕСЃРµРґРµР№
-			end
-		end
-	end
-
-	--[[СѓРІРµР»РёС‡РёРІР°РµРј СЃС‚РѕРёРјРѕСЃС‚СЊ
-	d = d + 1]]
-	--РїРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ РѕР±СЉРµРєС‚Сѓ РІ РѕС‡РµСЂРµРґРё РїСЂРѕРІРµСЂРѕРє
-	k = k +1
-	--СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃР»РµРґСѓСЋС‰РµРіРѕ РїСЂРѕРІРµСЂСЏРµРјРѕРіРѕ
-	CurNodeNumber = QueueForCheck[k]
 end
 
-	return false
-end
-
-
-
---!!!! СЂРµР°Р»РёР·РѕРІР°С‚СЊ!!
---РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РїСѓС‚Рё
+    --восстановление пути
 function RecoveryTheWay(ExitPoint)
-	-- РІС‹Р±СЂР°С‚СЊ СЃСЂРµРґРё СЃРѕСЃРµРґРЅРёС… СЏС‡РµР№РєСѓ, РїРѕРјРµС‡РµРЅРЅСѓСЋ С‡РёСЃР»РѕРј РЅР° 1 РјРµРЅСЊС€Рµ С‡РёСЃР»Р° РІ С‚РµРєСѓС‰РµР№ СЏС‡РµР№РєРµ
-    -- РїРµСЂРµР№С‚Рё РІ РІС‹Р±СЂР°РЅРЅСѓСЋ СЏС‡РµР№РєСѓ Рё РґРѕР±Р°РІРёС‚СЊ РµС‘ Рє РїСѓС‚Рё
-	-- РџРћРљРђ С‚РµРєСѓС‰Р°СЏ СЏС‡РµР№РєР° вЂ” РЅРµ СЃС‚Р°СЂС‚РѕРІР°СЏ
-	-- Р’РћР—Р’Р РђРў РїСѓС‚СЊ РЅР°Р№РґРµРЅ
-	Way = {}
-	CurNode = ExitPoint
-	curCost = NodesWithCost[CurNode]
-	while CurNode ~= StartPoint do
+    -- выбрать среди соседних ячейку, помеченную числом на 1 меньше числа в текущей ячейке
+    -- перейти в выбранную ячейку и добавить её к пути
+    -- ПОКА текущая ячейка — не стартовая
+    -- ВОЗВРАТ путь найден
+    Way = {}
+    CurNode = ExitPoint
+    curCost = NodesWithCost[CurNode]
+    while CurNode ~= StartPoint do
 
-		NeighborsNode = Node[CurNode] -- РґРѕР±Р°РІР»СЏРµРј РЅР° РїСЂРѕРІРµСЂРєСѓ СЃРїРёСЃРѕРє СЃРѕСЃРµРґРµР№ С‚РµРєСѓС‰РµР№ РЅРѕРґС‹
-		for i=1, #NeighborsNode do
-			if NodesWithCost[NeighborsNode[i]] == StartPoint then break
-			elseif NodesWithCost[NeighborsNode[i]] == curCost-1 then
-				table.insert(Way, NeighborsNode[i])
-				curNode = Neighbors[i]
-				curCost = curCost -1
-			end
-		end
-	end
-	return Way
+        NeighborsNode = Node[CurNode] -- добавляем на проверку список соседей текущей ноды
+        for i=1, #NeighborsNode do
+            if NodesWithCost[NeighborsNode[i]] == StartPoint then break
+            elseif NodesWithCost[NeighborsNode[i]] == curCost-1 then
+                table.insert(Way, NeighborsNode[i])
+                curNode = Neighbors[i]
+                curCost = curCost -1
+            end
+        end
+    end
+    return Way
 end
 
 
 
 --main
-local FileAdress = "D:\\LUA\\tests\\read_files\\Maze.txt"
+local FileAdress = "D:\\LUA\\tests\\labirint\\Maze.txt"
 local FileRead
 
 FileRead = io.open(FileAdress, "r")
+local ReadData
 ReadData = FileRead:read("*l")
 
---Р»Р°Р±РёСЂРёРЅС‚ РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ РѕРєСЂСѓР¶РµРЅ СЃС‚РµРЅРѕР№
---СЃРѕР·РґР°РµРј СЃС‚РµРЅСѓ СЃРІРµСЂС…Сѓ, РїРѕСЃР»Рµ - С‡РёС‚Р°РµРј Р»Р°Р±РёСЂРёРЅС‚ РёР· С„Р°Р№Р»Р°
-n = #ReadData+2 --СЂР°Р·РјРµСЂ СЃС‚СЂРѕРєРё = РґР»РёРЅР° СЃС‚СЂРѕРєРё РІ С„Р°Р№Р»Рµ + РґРІР° РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… СЃС‚РѕР»Р±С†Р° "СЃС‚РµРЅ" СЃРїСЂР°РІР° Рё СЃР»РµРІР°
+--лабиринт по-умолчанию окружен стеной
+--создаем стену сверху, после - читаем лабиринт из файла
+n = #ReadData+2 --размер строки = длина строки в файле + два дополнительных столбца "стен" справа и слева
 BaseMaze = {}
 for i =1, n do
-	table.insert(BaseMaze, 0)
+    table.insert(BaseMaze, 0)
 end
 
 while ReadData~=nil do
-	table.insert(BaseMaze, 0) --РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ РєР°Р¶РґРѕР№ СЃС‚СЂРѕРєРё - СЃС‚РµРЅР°
+    table.insert(BaseMaze, 0) --первый элемент каждой строки - стена
 
-	for str in string.gmatch(ReadData, ".") do
-		if str == 0 then
-			table.insert(BaseMaze, 0)
-		elseif str == "I"
-			table.insert(BaseMaze, 2)
-			StartPoint = #BaseMaze --Р·Р°РїРёСЃС‹РІР°РµРј РЅРѕРјРµСЂ СЏС‡РµР№РєРё, РІ РєРѕС‚РѕСЂСѓСЋ С‚РѕР»СЊРєРѕ С‡С‚Рѕ РґРѕР±Р°РІРёР»Рё РѕС‚РјРµС‚РєСѓ "СЃС‚Р°СЂС‚Р°"
-		elseif str == "E"
-			table.insert(BaseMaze, 3)
-			ExitPoint = #BaseMaze --РЅРѕРјРµСЂ СЏС‡РµР№РєРё РІС‹С…РѕРґР°
-		else
-			table.insert(BaseMaze, 1)
-		end
-	end
+    for str in string.gmatch(ReadData, ".") do
+        if str == "0" then
+            table.insert(BaseMaze, 0)
+        elseif str == "I" then
+            table.insert(BaseMaze, 2)
+            StartPoint = #BaseMaze --записываем номер ячейки, в которую только что добавили отметку "старта"
+        elseif str == "E" then
+            table.insert(BaseMaze, 3)
+            ExitPoint = #BaseMaze --номер ячейки выхода
+        else
+            table.insert(BaseMaze, 1)
+        end
+    end
 
-	table.insert(BaseMaze, 0) --РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ РєР°Р¶РґРѕР№ СЃС‚СЂРѕС‡РєРё С‚РѕР¶Рµ СЃС‚РµРЅР°
+    table.insert(BaseMaze, 0) --последний элемент каждой строчки тоже стена
+	ReadData = FileRead:read("*l")
 end
 FileRead:close()
 
---РґРѕР±Р°РІРёС‚СЊ РЅРёР¶РЅСЋСЋ СЃС‚СЂРѕРєСѓ СЃС‚РµРЅ
+--добавить нижнюю строку стен
 for i =1, n do
-	table.insert(BaseMaze, 0)
+    table.insert(BaseMaze, 0)
 end
 
-Node = {} --РЅР°С€Рё СѓР·Р»С‹ = СЃРІРѕР±РѕРґРЅС‹Рµ РґР»СЏ РїСЂРѕС…РѕРґР° СЏС‡РµР№РєРё Р»Р°Р±РёСЂРёРЅС‚Р°
+Node = {} --наши узлы = свободные для прохода ячейки лабиринта
 
 for i=1, #BaseMaze do
-	if BaseMaze[i] == 1 or BaseMaze[i] == 2 or BaseMaze[i] == 3
-		tmp_node = {i = FindNeighbors(i)}
-		table.insert(Node, tmp_node)
-		tmp_node = nil
-	end
+    if BaseMaze[i] == 1 or BaseMaze[i] == 2 or BaseMaze[i] == 3 then
+        tmp_node = {i = FindNeighbors(i)}
+        table.insert(Node, tmp_node)
+        tmp_node = nil
+    end
 end
 
 
@@ -144,52 +129,35 @@ local FileWriteAdress = "D:\\LUA\\tests\\labirint\\result.txt"
 local FileWrite
 FileWrite = io.open(FileWriteAdress, "w")
 
-if FindTheWay(StartPoint) = true or NodesWithCost[ExitPoint] ~= nil then
--- РµСЃР»Рё РЅР°С€РµР»СЃСЏ РїСѓС‚СЊ РёР»Рё РїРѕРјРµС‡РµРЅР° С„РёРЅРёС€РЅР°СЏ СЏС‡РµР№РєР°
-	NewWay = RecoveryTheWay(ExitPoint)
-	if NewWay ~= nil then
-		for numb in NewWay
-			BaseMaze[numb] = "-"
-		end
-	end
-end
 
-	for i=1, #BaseMaze, n do
-		for j = i, i+n-1 do
-			if BaseMaze[j] == 0
-				FileWrite:write(0)
-			elseif BaseMaze[j] == 1
-				FileWrite:write(" ")
-			elseif BaseMaze[j] == 2
-				FileWrite:write("I")
-			elseif BaseMaze[j] == 3
-				FileWrite:write("E")
-			elseif BaseMaze[j] == "-"
-				FileWrite:write("-")
-			end
-		end
-		FileWrite:write("\n')
-	end
 
+if FindTheWay(StartPoint) == true or NodesWithCost[ExitPoint] ~= nil then
+-- если нашелся путь или помечена финишная ячейка
+    NewWay = RecoveryTheWay(ExitPoint)
+    if NewWay ~= nil then
+        for numb in NewWay do
+            BaseMaze[numb] = "-"
+        end
+    end
+    for i=1, #BaseMaze, n do
+        for j = i, i+n-1 do
+            if BaseMaze[j] == 0 then
+                FileWrite:write(0)
+            elseif BaseMaze[j] == 1 then
+                FileWrite:write(" ")
+            elseif BaseMaze[j] == 2 then
+                FileWrite:write("I")
+            elseif BaseMaze[j] == 3 then
+                FileWrite:write("E")
+            elseif BaseMaze[j] == "-" then
+                FileWrite:write("-")
+            end
+        end
+        FileWrite:write("\n")
+    end
+    FileWrite:close()
 else
 
-	FileWrite:write("There isn't any way from start to finish.Sorry :-(")
-	FileWrite:close()
+    FileWrite:write("There isn't any way from start to finish.Sorry :-(")
+    FileWrite:close()
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
