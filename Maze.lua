@@ -1,23 +1,21 @@
+
 --looking for neighbors
 function FindNeighbors(i)
     neighbors = {}
-    if BaseMaze[i-1] == 1 or BaseMaze[i-1] == 3 or BaseMaze[i-1] == 2 then table.insert(neighbors, i-1) end --сосед слева
-    if BaseMaze[i+1] == 1 or BaseMaze[i+1] == 3 or BaseMaze[i+1] == 2 then table.insert(neighbors, i+1) end --сосед справа
-    if BaseMaze[i-n] == 1 or BaseMaze[i-n] == 3 or BaseMaze[i-n] == 2 then table.insert(neighbors, i-n) end --сосед сверху
-    if BaseMaze[i+n] == 1 or BaseMaze[i+n] == 3 or BaseMaze[i+n] == 2 then table.insert(neighbors, i+n) end --сосед снизу
+    if BaseMaze[i-1] == 1 or BaseMaze[i-1] == 3 or BaseMaze[i-1] == 2 then table.insert(neighbors, i-1) end --left neighbor
+    if BaseMaze[i+1] == 1 or BaseMaze[i+1] == 3 or BaseMaze[i+1] == 2 then table.insert(neighbors, i+1) end --right neighbor
+    if BaseMaze[i-n] == 1 or BaseMaze[i-n] == 3 or BaseMaze[i-n] == 2 then table.insert(neighbors, i-n) end --neighbor on top
+    if BaseMaze[i+n] == 1 or BaseMaze[i+n] == 3 or BaseMaze[i+n] == 2 then table.insert(neighbors, i+n) end --bottom neighbor
 
     return neighbors
 end
 
 --looking for a way
-	QueueForCheck = {}
-    NodesWithCost = {}
 function FindTheWay(StartPoint)
-    --QueueForCheck = {}
-    --NodesWithCost = {}
+    QueueForCheck = {}
+    NodesWithCost = {}
 
 	NodesWithCost[StartPoint] = 0
-    --table.insert(NodesWithCost, start, 0)
     CurNodeNumber = StartPoint
     k = 0 -- step in queue
 
@@ -54,7 +52,7 @@ function RecoveryTheWay(ExitPoint)
     -- ѕќ ј текуща€ €чейка Ч не стартова€
     -- ¬ќ«¬–ј“ путь найден
     print("Start function\n")
-	local Way = {}
+	Way = {}
 	local NeighborsNode = {}
 
 	print("ExitPoint = ", ExitPoint)
@@ -78,17 +76,16 @@ function RecoveryTheWay(ExitPoint)
 
 	   for i=1, #NeighborsNode do
 			print("start second loop for. i = ",i)
-		if NeighborsNode[i] --[[NodesWithCost[NeighborsNode[i]] == StartPoint then
+		if NeighborsNode[i] == StartPoint then
 			print("NodesWithCost[NeighborsNode[i]] == StartPoint", NodesWithCost[NeighborsNode[i]])
 			return way
-		--break
-            elseif NodesWithCost[NeighborsNode[i]] == CurCost-1 then
-				print("Inside elseif NodesWithCost[NeighborsNode[i]] = ", NodesWithCost[NeighborsNode[i]])
-                table.insert(Way, NeighborsNode[i])
-                CurNode = NeighborsNode[i]
-				print("Now curNode = ", CurNode)
-                CurCost = CurCost -1
-				print("now curCost = ", CurCost)
+	    elseif NodesWithCost[NeighborsNode[i]] == CurCost-1 then
+			print("Inside elseif NodesWithCost[NeighborsNode[i]] = ", NodesWithCost[NeighborsNode[i]])
+            table.insert(Way, NeighborsNode[i])
+            CurNode = NeighborsNode[i]
+			print("Now curNode = ", CurNode)
+            CurCost = CurCost -1
+			print("now curCost = ", CurCost)
             end
         end
 		print("End while-iteration. Way = ", Way[#Way])
@@ -171,10 +168,16 @@ FileWrite = io.open(FileWriteAdress, "w")
 
 FindTheWay(StartPoint)
 if NodesWithCost[ExitPoint]~= nil then
-	NewWay = RecoveryTheWay(ExitPoint)
+	--local NewWay = RecoveryTheWay(ExitPoint)
+	RecoveryTheWay(ExitPoint)
+	NewWay = Way
+	print("#NewWay = ", #NewWay)
+	print("NewWay = ", NewWay[#NewWay])
     if NewWay ~= nil then
-        for numb in NewWay do
-            BaseMaze[numb] = "-"
+		print("Inside if")
+        for i=1, #NewWay do
+			print("Inside for, numb = ", NewWay[i])
+            BaseMaze[NewWay[i]] = 5
         end
     end
     for i=1, #BaseMaze, n do
@@ -187,8 +190,8 @@ if NodesWithCost[ExitPoint]~= nil then
                 FileWrite:write("I")
             elseif BaseMaze[j] == 3 then
                 FileWrite:write("E")
-            elseif BaseMaze[j] == "-" then
-                FileWrite:write("-")
+            elseif BaseMaze[j] == 5 then
+                FileWrite:write("$")
             end
         end
         FileWrite:write("\n")
@@ -200,36 +203,3 @@ else
 
 end
 end
-
-
-
---[[if FindTheWay(StartPoint) == true or NodesWithCost[ExitPoint] ~= nil then
--- если нашелс€ путь или помечена финишна€ €чейка
-    NewWay = RecoveryTheWay(ExitPoint)
-    if NewWay ~= nil then
-        for numb in NewWay do
-            BaseMaze[numb] = "-"
-        end
-    end
-    for i=1, #BaseMaze, n do
-        for j = i, i+n-1 do
-            if BaseMaze[j] == 0 then
-                FileWrite:write(0)
-            elseif BaseMaze[j] == 1 then
-                FileWrite:write(" ")
-            elseif BaseMaze[j] == 2 then
-                FileWrite:write("I")
-            elseif BaseMaze[j] == 3 then
-                FileWrite:write("E")
-            elseif BaseMaze[j] == "-" then
-                FileWrite:write("-")
-            end
-        end
-        FileWrite:write("\n")
-    end
-    FileWrite:close()
-else
-
-    FileWrite:write("There isn't any way from start to finish.Sorry :-(")
-    FileWrite:close()
-end]]
