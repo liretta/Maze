@@ -15,29 +15,27 @@ function FindTheWay(StartPoint)
     QueueForCheck = {}
     NodesWithCost = {}
 
-	NodesWithCost[StartPoint] = 0
+	NodesWithCost[StartPoint] = 0 --key = number of cell, value = cost this cell by the way
     CurNodeNumber = StartPoint
     k = 0 -- step in queue
 
     while NodesWithCost[ExitPoint] ==nil do --while we not mark the finish
 
-        for i = 1, #Node[CurNodeNumber] do --дл€ каждого соседа
+        for i = 1, #Node[CurNodeNumber] do --for each neaghbor
             if Node[CurNodeNumber][i] == ExitPoint then
-                --table.insert(NodesWithCost, Node[CurNodeNumber][i], NodesWithCost[CurNodeNumber]+1)
-                NodesWithCost[Node[CurNodeNumber][i]] = NodesWithCost[CurNodeNumber]+1
+                NodesWithCost[Node[CurNodeNumber][i]] = NodesWithCost[CurNodeNumber]+1 --added to the table cost of current cell
                 return true
             else
-                if NodesWithCost[Node[CurNodeNumber][i]] == nil then --провер€ем, что i-й по счету сосед еще не помечен
-                    --table.insert(NodesWithCost, Node[CurNodeNumber][i] = NodesWithCost[CurNodeNumber]+1)
+                if NodesWithCost[Node[CurNodeNumber][i]] == nil then --if i-neighbor isn't mark as checked
                     NodesWithCost[Node[CurNodeNumber][i]] = NodesWithCost[CurNodeNumber]+1
-                    table.insert(QueueForCheck, Node[CurNodeNumber][i]) -- добавл€ем этого соседа в список на проверку соседей
+                    table.insert(QueueForCheck, Node[CurNodeNumber][i]) -- add this neighbor to queue for checking
                 end
             end
         end
 
-        --переходим к следующему объекту в очереди проверок
+        --go to next step
         k = k +1
-        --устанавливаем следующего провер€емого
+        --take the next Node
         CurNodeNumber = QueueForCheck[k]
     end
 
@@ -45,52 +43,33 @@ function FindTheWay(StartPoint)
 
 end
 
-    --восстановление пути
+
 function RecoveryTheWay(ExitPoint)
-    -- выбрать среди соседних €чейку, помеченную числом на 1 меньше числа в текущей €чейке
-    -- перейти в выбранную €чейку и добавить еЄ к пути
-    -- ѕќ ј текуща€ €чейка Ч не стартова€
-    -- ¬ќ«¬–ј“ путь найден
-    print("Start function\n")
-	Way = {}
+    -- take the current Node
+    -- looking for a neighbor with a cost of 1 less
+    -- repeat until current Node isn't StartPoint
+
+    Way = {}
 	local NeighborsNode = {}
 
-	print("ExitPoint = ", ExitPoint)
-	print("StartPoint = ", StartPoint)
-    CurNode = ExitPoint
-	print("CurNode = ", CurNode)
-
+	CurNode = ExitPoint
 	CurCost = NodesWithCost[CurNode]
-    print("curCost= ", CurCost)
 
 	while CurNode ~= StartPoint do
-		print("Start while")
-		print("Node[CurNode] = ", Node[CurNode])
-		print("#Node[CurNode] = ", #Node[CurNode])
 		for i = 1, #Node[CurNode] do
-			print("Start loop for, i= ", i)
-
-			NeighborsNode[i] = Node[CurNode][i] -- добавл€ем на проверку список соседей текущей ноды
-			print("Neighbors list for checking = ", NeighborsNode[i])
+			NeighborsNode[i] = Node[CurNode][i] -- added to check-list all neighbors
 		end
 
 	   for i=1, #NeighborsNode do
-			print("start second loop for. i = ",i)
 		if NeighborsNode[i] == StartPoint then
-			print("NodesWithCost[NeighborsNode[i]] == StartPoint", NodesWithCost[NeighborsNode[i]])
-			return way
+			return Way
 	    elseif NodesWithCost[NeighborsNode[i]] == CurCost-1 then
-			print("Inside elseif NodesWithCost[NeighborsNode[i]] = ", NodesWithCost[NeighborsNode[i]])
-            table.insert(Way, NeighborsNode[i])
+			table.insert(Way, NeighborsNode[i])
             CurNode = NeighborsNode[i]
-			print("Now curNode = ", CurNode)
-            CurCost = CurCost -1
-			print("now curCost = ", CurCost)
-            end
+			CurCost = CurCost -1
+			end
         end
-		print("End while-iteration. Way = ", Way[#Way])
     end
-	print("Return Way. Way# = ", #Way)
     return Way
 end
 
@@ -98,65 +77,59 @@ end
 
 --main
 local FileAdress = "D:\\LUA\\tests\\labirint\\Maze.txt"
-local FileRead
-
-FileRead = io.open(FileAdress, "r")
-local ReadData
-ReadData = FileRead:read("*l")
+local FileRead = io.open(FileAdress, "r")
+local ReadData = FileRead:read("*l")
 
 if ReadData == nil then
 	local FileWriteAdress = "D:\\LUA\\tests\\labirint\\result.txt"
-	local FileWrite
-
-	FileWrite = io.open(FileWriteAdress, "w")
+	local FileWrite = io.open(FileWriteAdress, "w")
 	FileWrite:write("Error with open file")
 	FileWrite:close()
 else
 
 
---лабиринт по-умолчанию окружен стеной
---создаем стену сверху, после - читаем лабиринт из файла
-n = #ReadData+2 --размер строки = длина строки в файле + два дополнительных столбца "стен" справа и слева
+--by defolt the maze surrounded by the wall regardless of the file
+--creat firs wall, then - reading from file
+n = #ReadData+2 --lenght by 1 line in maze = lenght line from file +2 additional wall from raght and left
 BaseMaze = {}
 for i =1, n do
     table.insert(BaseMaze, 0)
 end
 
 while ReadData~=nil do
-    table.insert(BaseMaze, 0) --первый элемент каждой строки - стена
+    table.insert(BaseMaze, 0) --first element of each line should be the wall
 
     for str in string.gmatch(ReadData, ".") do
         if str == "0" or str == 0 then
             table.insert(BaseMaze, 0)
         elseif str == "I" then
             table.insert(BaseMaze, 2)
-            StartPoint = #BaseMaze --записываем номер €чейки, в которую только что добавили отметку "старта"
+            StartPoint = #BaseMaze --saving start cell number
         elseif str == "E" then
             table.insert(BaseMaze, 3)
-            ExitPoint = #BaseMaze --номер €чейки выхода
+            ExitPoint = #BaseMaze --saving exit cell number
         else
             table.insert(BaseMaze, 1)
         end
     end
 
-    table.insert(BaseMaze, 0) --последний элемент каждой строчки тоже стена
+    table.insert(BaseMaze, 0) --last element from each line should be the wall
 	ReadData = FileRead:read("*l")
 end
 FileRead:close()
 
---добавить нижнюю строку стен
+--add last line with the wall
 for i =1, n do
     table.insert(BaseMaze, 0)
 end
 
 
-Node = {} --наши узлы = свободные дл€ прохода €чейки лабиринта
+Node = {} --key == node number, value = table with all neighbors by this Node
 
 for i=1, #BaseMaze do
     if BaseMaze[i] == 1 or BaseMaze[i] == 2 or BaseMaze[i] == 3 then
 		tmp_node = FindNeighbors(i)
 		Node[i] = tmp_node
-        --table.insert(Node, tmp_node)
         tmp_node = nil
     end
 end
@@ -168,16 +141,10 @@ FileWrite = io.open(FileWriteAdress, "w")
 
 FindTheWay(StartPoint)
 if NodesWithCost[ExitPoint]~= nil then
-	--local NewWay = RecoveryTheWay(ExitPoint)
-	RecoveryTheWay(ExitPoint)
-	NewWay = Way
-	print("#NewWay = ", #NewWay)
-	print("NewWay = ", NewWay[#NewWay])
+	NewWay = RecoveryTheWay(ExitPoint)
     if NewWay ~= nil then
-		print("Inside if")
         for i=1, #NewWay do
-			print("Inside for, numb = ", NewWay[i])
-            BaseMaze[NewWay[i]] = 5
+			BaseMaze[NewWay[i]] = 5
         end
     end
     for i=1, #BaseMaze, n do
@@ -191,7 +158,7 @@ if NodesWithCost[ExitPoint]~= nil then
             elseif BaseMaze[j] == 3 then
                 FileWrite:write("E")
             elseif BaseMaze[j] == 5 then
-                FileWrite:write("$")
+                FileWrite:write("/")
             end
         end
         FileWrite:write("\n")
