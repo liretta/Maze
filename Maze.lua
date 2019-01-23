@@ -53,24 +53,47 @@ function RecoveryTheWay(ExitPoint)
     -- перейти в выбранную €чейку и добавить еЄ к пути
     -- ѕќ ј текуща€ €чейка Ч не стартова€
     -- ¬ќ«¬–ј“ путь найден
-    Way = {}
-	NeighborsNode = {}
+    print("Start function\n")
+	local Way = {}
+	local NeighborsNode = {}
+
+	print("ExitPoint = ", ExitPoint)
+	print("StartPoint = ", StartPoint)
     CurNode = ExitPoint
-    curCost = NodesWithCost[CurNode]
-    while CurNode ~= StartPoint do
+	print("CurNode = ", CurNode)
+
+	CurCost = NodesWithCost[CurNode]
+    print("curCost= ", CurCost)
+
+	while CurNode ~= StartPoint do
+		print("Start while")
+		print("Node[CurNode] = ", Node[CurNode])
+		print("#Node[CurNode] = ", #Node[CurNode])
 		for i = 1, #Node[CurNode] do
+			print("Start loop for, i= ", i)
+
 			NeighborsNode[i] = Node[CurNode][i] -- добавл€ем на проверку список соседей текущей ноды
+			print("Neighbors list for checking = ", NeighborsNode[i])
 		end
 
 	   for i=1, #NeighborsNode do
-            if NodesWithCost[NeighborsNode[i]] == StartPoint then break
-            elseif NodesWithCost[NeighborsNode[i]] == curCost-1 then
+			print("start second loop for. i = ",i)
+		if NeighborsNode[i] --[[NodesWithCost[NeighborsNode[i]] == StartPoint then
+			print("NodesWithCost[NeighborsNode[i]] == StartPoint", NodesWithCost[NeighborsNode[i]])
+			return way
+		--break
+            elseif NodesWithCost[NeighborsNode[i]] == CurCost-1 then
+				print("Inside elseif NodesWithCost[NeighborsNode[i]] = ", NodesWithCost[NeighborsNode[i]])
                 table.insert(Way, NeighborsNode[i])
-                curNode = NeighborsNode[i]
-                curCost = curCost -1
+                CurNode = NeighborsNode[i]
+				print("Now curNode = ", CurNode)
+                CurCost = CurCost -1
+				print("now curCost = ", CurCost)
             end
         end
+		print("End while-iteration. Way = ", Way[#Way])
     end
+	print("Return Way. Way# = ", #Way)
     return Way
 end
 
@@ -148,7 +171,7 @@ FileWrite = io.open(FileWriteAdress, "w")
 
 FindTheWay(StartPoint)
 if NodesWithCost[ExitPoint]~= nil then
-NewWay = RecoveryTheWay(ExitPoint)
+	NewWay = RecoveryTheWay(ExitPoint)
     if NewWay ~= nil then
         for numb in NewWay do
             BaseMaze[numb] = "-"
